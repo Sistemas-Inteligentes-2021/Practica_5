@@ -65,5 +65,6 @@ colum1 | colum2 | colum3 | colum4
 
 ## 5. Bibliography
 
+➡️  Infinity: [Python Docs: Swarm][infinity]
 
-[]: url
+[infinity]: https://www.it-swarm-es.com/es/python/como-puedo-representar-un-numero-infinito-en-python/939929888/
