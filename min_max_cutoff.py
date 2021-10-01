@@ -1,23 +1,18 @@
 # Libraries
-from math import inf
+from math import inf, sqrt
 
 max_depth=3
 
-
-
 def result(state,action): #TRansiction function
     player = 'O' if state.count(' ')%2==0 else 'X'
-
+    if state[action]!=' ':
+        return None
+    state[action]=player
     return state
-
 
 def cut_off(state,depth):
     return depth==max_depth
  
-
-def count_rows(player,state):
-    print("d")
-
 
 def eval(state):  #Funcion heurisitca
     print("Eval")
@@ -68,12 +63,14 @@ def max_value(state,alfa,betha,depth, actions):
 def show_board(state):
     print("Showing board")
 
-def interpretate(movement,actions):
-    #INTERPRETAR EL movimiento
-    return movement
+def interpretate(movement,actions):#INTERPRETATE the movemente given by the human player
+    
+    size=int(sqrt(actions))
+    value=size*(int(movement[1])-1)+(ord(movement[0])-65)
+    return value
 
 
-def is_a_winner(state,actions):
+def is_a_winner(state,actions): #Verify if it is a winner
 
 
     return 0
@@ -85,6 +82,9 @@ def play_game(state,actions,type_player):
         while is_a_winner(state,actions)==0:
             movement=input("Insert your movement coordinates\n")
             state=result(state,interpretate(movement,actions))
+            while state!=None:
+                print("Invalid Movement, please try again with other movement\n")
+                state=result(state,interpretate(movement,actions))
             show_board(state)
             nextMove,v=Min_Max_Cut_Off(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
             print("The machine did the next movement :", nextMove)
@@ -98,6 +98,9 @@ def play_game(state,actions,type_player):
             show_board(state)
             movement=input("Insert your movement coordinates\n")
             state=result(state,interpretate(movement))
+            while state!=None:
+                print("Invalid Movement, please try again with other movement\n")
+                state=result(state,interpretate(movement,actions))
             show_board(state)
           
     
