@@ -4,15 +4,9 @@ from math import inf
 max_depth=3
 
 
-def miss_places(state):
-    quantity=0
-    for i in state:
-        for j in i:
-            quantity+= 1 if j==' ' else 0
-    return quantity
 
 def result(state,action): #TRansiction function
-    player = 'O' if miss_places(state)%2==0 else 'X'
+    player = 'O' if state.count(' ')%2==0 else 'X'
 
     return state
 
@@ -22,7 +16,6 @@ def cut_off(state,depth):
  
 
 def count_rows(player,state):
-    #for i in range(3):
     print("d")
 
 
@@ -32,7 +25,7 @@ def eval(state):  #Funcion heurisitca
 def Min_Max_Cut_Off(state,actions):
     v=-inf 
     s_act=None
-    for action in actions:
+    for action in range(actions):
         val=min_value(result(state,action),-inf,inf,0,actions)
         if val > v :
             v=val
@@ -42,7 +35,7 @@ def Min_Max_Cut_Off(state,actions):
 def Max_Min_Cut_Off(state,actions):
     v=inf 
     s_act=None
-    for action in actions:
+    for action in range(actions):
         val=max_value(result(state,action),-inf,inf,0,actions)
         if val < v :
             v=val
@@ -53,7 +46,7 @@ def min_value(state,alfa,betha,depth, actions):
     if cut_off(state,depth):
         return eval(state)
     v=inf
-    for action in actions:
+    for action in range(actions):
         v=min(v,max_value(result(state,action)),alfa,betha,depth+1,actions)
         if (v<=alfa):
             return v
@@ -65,7 +58,7 @@ def max_value(state,alfa,betha,depth, actions):
     if cut_off(state,depth):
         return eval(state)
     v=-inf
-    for action in actions:
+    for action in range(actions):
         v=max(v,min_value(result(state,action)),alfa,betha,depth+1,actions)
         if (v>=betha):
             return v
@@ -75,26 +68,38 @@ def max_value(state,alfa,betha,depth, actions):
 def show_board(state):
     print("Showing board")
 
-def interpretate(movement):
+def interpretate(movement,actions):
     #INTERPRETAR EL movimiento
     return movement
 
 
-def is_a_winner(state):
-    return state
+def is_a_winner(state,actions):
+
+
+    return 0
 
 
 def play_game(state,actions,type_player):
 
     if type_player=='X':
-        while is_a_winner(state)==0:
-            movement=input("Ingrese Las coordenadas de su movimiento\n")
-            state=result(state,interpretate(movement))
+        while is_a_winner(state,actions)==0:
+            movement=input("Insert your movement coordinates\n")
+            state=result(state,interpretate(movement,actions))
             show_board(state)
             nextMove,v=Min_Max_Cut_Off(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
-            print("The machine ")
+            print("The machine did the next movement :", nextMove)
             state=result(state,nextMove)
             show_board(state)
+    else:
+         while is_a_winner(state,actions)==0:
+            nextMove,v=Max_Min_Cut_Off(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
+            print("The machine did the next movement :", nextMove)
+            state=result(state,nextMove)
+            show_board(state)
+            movement=input("Insert your movement coordinates\n")
+            state=result(state,interpretate(movement))
+            show_board(state)
+          
     
     return interpretate(nextMove)
     
@@ -107,15 +112,14 @@ def main():
     play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O")
     diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)")
     if diff==1:
-        initial_State=[[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
+        initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
         actions=9
     elif diff==2:
-        initial_State=[[' ', ' ', ' ',' '], [' ', ' ', ' ',' '], [' ', ' ', ' ',' '], [' ', ' ', ' ',' ']]
+        initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
         actions=16
     elif diff==3:
-        initial_State=[[' ',' ', ' ',' ',' '], [' ', ' ', ' ',' ',' '], [' ', ' ', ' ',' ',' '], [' ', ' ', ' ',' ',' '], [' ', ' ', ' ',' ',' ']]
-        actions=25
-        
+        initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
+        actions=25        
     play_game(initial_State,actions,play)
 
 if __name__ == '__main__':

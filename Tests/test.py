@@ -1,4 +1,5 @@
 from math import inf
+from typing import Counter
 
 test = float("inf")
 
@@ -6,9 +7,15 @@ test = float("inf")
 a=inf
 b=-inf
 
-print(test)
+# print(test)
 
-print(a)
-print(b)
+# print(a)
+# print(b)
 
-print('Aqui')
+# print('Aqui')
+
+# for i in range(16):
+#     print(i)
+initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+
+print(initial_State.count(' '))
