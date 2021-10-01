@@ -14,6 +14,7 @@ def cut_off(state,depth):
     return depth==max_depth
  
 
+
 def eval(state):  #Funcion heurisitca
     print("Eval")
 
@@ -61,25 +62,79 @@ def max_value(state,alfa,betha,depth, actions):
     return v
 
 def show_board(state):
-    print("Showing board")
+    print(state)
 
 def interpretate(movement,actions):#INTERPRETATE the movemente given by the human player
-    
     size=int(sqrt(actions))
     value=size*(int(movement[1])-1)+(ord(movement[0])-65)
     return value
 
 
-def is_a_winner(state,actions): #Verify if it is a winner
+def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw ( 0 ) or none
+    size=int(sqrt(actions))
+    #rows
+    x_counter=0
+    o_counter=0
+    for i in range(actions):
+        #verify the jump of row
+        if i % size ==0:
+            x_counter=0
+            o_counter=0
+        if state[i]=='X':
+            x_counter+=1
+        elif state[i]=='O':
+            o_counter+=1
+        if x_counter==size:
+            return 1
+        if o_counter==size:
+            return -1
+    #columns
+    for i in range(size):
+        x_counter=0
+        o_counter=0
+        for j in range(size):                        
+            if state[i+j*size]=='X':
+                x_counter+=1
+            elif state[i+j*size]=='O':
+                o_counter+=1
+        if x_counter==size:
+            return 1
+        if o_counter==size:
+            return -1
 
-
-    return 0
+    #diagonals
+    x_counter=0
+    o_counter=0
+    for i in range(size):
+        if state[(size+1)*i]=='X':
+            x_counter+=1
+        elif state[(size+1)*i]=='O':
+            o_counter+=1
+    if x_counter==size:
+        return 1
+    if o_counter==size:
+        return -1
+    x_counter=0
+    o_counter=0
+    for i in range(size):
+        if state[(size-1)*(i+1)]=='X':
+            x_counter+=1
+        elif state[(size-1)*(i+1)]=='O':
+            o_counter+=1
+    if x_counter==size:
+        return 1
+    if o_counter==size:
+        return -1
+    #draw
+    if state.count(' ')==0:
+        return 0
+    return None
 
 
 def play_game(state,actions,type_player):
-
+    winner=None
     if type_player=='X':
-        while is_a_winner(state,actions)==0:
+        while winner==None:
             movement=input("Insert your movement coordinates\n")
             state=result(state,interpretate(movement,actions))
             while state!=None:
@@ -90,8 +145,9 @@ def play_game(state,actions,type_player):
             print("The machine did the next movement :", nextMove)
             state=result(state,nextMove)
             show_board(state)
+            winner=is_a_winner(state,actions)
     else:
-         while is_a_winner(state,actions)==0:
+         while winner==None:
             nextMove,v=Max_Min_Cut_Off(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
             print("The machine did the next movement :", nextMove)
             state=result(state,nextMove)
@@ -102,12 +158,24 @@ def play_game(state,actions,type_player):
                 print("Invalid Movement, please try again with other movement\n")
                 state=result(state,interpretate(movement,actions))
             show_board(state)
-          
-    
+            winner=is_a_winner(state,actions)
     return interpretate(nextMove)
     
 
 
+def tests():
+    state=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+    actions=9
+    while winner==None:
+        nextMove,v=Max_Min_Cut_Off(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
+        print("The machine did the next movement :", nextMove)
+        state=result(state,nextMove)
+        show_board(state)
+        nextMove,v=Min_Max_Cut_Off(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
+        print("The machine did the next movement :", nextMove)
+        state=result(state,nextMove)
+        show_board(state)
+        winner=is_a_winner(state,actions)
 
 # Main Function
 def main():
@@ -127,50 +195,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-    '''
-    
-    if action == 1:
-        if state[0][0]!=' ':
-            return None
-        state[0][0]=player
-    elif action == 2:
-        if state[0][1]!=' ':
-            return None
-        state[0][1]=player
-    elif action == 3:
-        if state[0][2]!=' ':
-            return None
-        state[0][2]=player
-    elif action == 4:
-        if state[1][0]!=' ':
-            return None
-        state[1][0]=player
-    elif action == 5:
-        if state[1][1]!=' ':
-            return None
-        state[1][1]=player
-    elif action == 6:
-        if state[1][2]!=' ':
-            return None
-        state[1][2]=player
-    elif action == 7:
-        if state[2][0]!=' ':
-            return None
-        state[2][0]=player
-    elif action == 8:
-        if state[2][1]!=' ':
-            return None
-        state[2][1]=player
-    elif action == 9:
-        if state[2][2]!=' ':
-            return None
-        state[2][2]=player
-    return state
-'''
