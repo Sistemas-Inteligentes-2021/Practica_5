@@ -1,5 +1,7 @@
 # Libraries
-from math import inf, ldexp, sqrt
+from math import inf, sqrt
+from tabulate import tabulate
+import copy
 
 max_depth=3
 
@@ -17,21 +19,26 @@ def terminal_state(state,actions):
 def Min_Max(state,actions):
     v=-inf 
     s_act=None
+    print(state)
     for action in range(actions):
-        val=min_value(result(state,action),actions)
-        if val > v :
-            v=val
-            s_act=action
+        nextAction=result(copy.deepcopy(state),action)
+        if nextAction!=None:            
+            val=min_value(nextAction,actions)            
+            if val >= v :
+                v=val
+                s_act=action
     return s_act,v
     
 def Max_Min(state,actions):
     v=inf 
     s_act=None
     for action in range(actions):
-        val=max_value(result(state,action),actions)
-        if val < v :
-            v=val
-            s_act=action
+        nextAction=result(copy.deepcopy(state),action)
+        if nextAction!=None:
+            val=max_value(nextAction,actions)
+            if val <= v :
+                v=val
+                s_act=action
     return s_act,v
 
 def min_value(state, actions):
@@ -40,7 +47,9 @@ def min_value(state, actions):
         return evalRes
     v=inf
     for action in range(actions):
-        v=min(v,max_value(result(state,action),actions))
+        nextAction=result(state,action)
+        if nextAction!=None:
+            v=min(v,max_value(nextAction,actions))
     return v
 
 
@@ -50,11 +59,22 @@ def max_value(state, actions):
         return evalRes
     v=-inf
     for action in range(actions):
-        v=max(v,min_value(result(state,action),actions))
+        nextAction=result(state,action)
+        if nextAction!=None:
+            v=max(v,min_value(nextAction,actions))
     return v
+def split_list(my_list, wanted_parts):
+    length = len(my_list)
+    return [ my_list[i*length // wanted_parts: (i+1)*length // wanted_parts] 
+             for i in range(wanted_parts) ]
 
-def show_board(state):
-    print(state)
+# Display Array in Grid
+def show_board(my_list, size):
+    n_parts = int(sqrt(size))
+    item = split_list(my_list, n_parts)
+    table = tabulate(item, tablefmt="fancy_grid")
+    print(table)
+    #print('\n')
 
 def interpretate(movement,actions):#INTERPRETATE the movemente given by the human player
     size=int(sqrt(actions))
@@ -62,8 +82,7 @@ def interpretate(movement,actions):#INTERPRETATE the movemente given by the huma
     return value
 
 
-def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw ( 0 ) or none
-    size=int(sqrt(actions))
+def veriy_rows(state,actions,size):
     #rows
     x_counter=0
     o_counter=0
@@ -80,7 +99,10 @@ def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw (
             return 1
         if o_counter==size:
             return -1
-    #columns
+    return None
+
+
+def veriy_columns(state,actions,size):
     for i in range(size):
         x_counter=0
         o_counter=0
@@ -93,8 +115,9 @@ def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw (
             return 1
         if o_counter==size:
             return -1
+    return None
 
-    #diagonals
+def verify_diagonals(state,actions,size):
     x_counter=0
     o_counter=0
     for i in range(size):
@@ -117,6 +140,19 @@ def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw (
         return 1
     if o_counter==size:
         return -1
+    return None
+
+def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw ( 0 ) or none
+    size=int(sqrt(actions))
+    winner=veriy_rows(state,actions,size)
+    if winner!=None:
+        return winner
+    winner=veriy_columns(state,actions,size)
+    if winner!=None:
+        return winner
+    winner=verify_diagonals(state,actions,size)
+    if winner!=None:
+        return winner
     #draw
     if state.count(' ')==0:
         return 0
@@ -125,33 +161,36 @@ def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw (
 
 def play_game(state,actions,type_player):
     winner=None
-    if type_player=='X':
+    if type_player=='1':
         while winner==None:
+            show_board(state,actions)
             movement=input("Insert your movement coordinates\n")
             state=result(state,interpretate(movement,actions))
-            while state!=None:
+            while state==None:
                 print("Invalid Movement, please try again with other movement\n")
+                movement=input("Insert your movement coordinates\n")
                 state=result(state,interpretate(movement,actions))
-            show_board(state)
-            nextMove,v=Min_Max(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
+            show_board(state,actions)
+            nextMove,v=Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
             print("The machine did the next movement :", nextMove)
             state=result(state,nextMove)
-            show_board(state)
+            show_board(state,actions)
             winner=is_a_winner(state,actions)
     else:
          while winner==None:
-            nextMove,v=Max_Min(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
+            nextMove,v=Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
             print("The machine did the next movement :", nextMove)
             state=result(state,nextMove)
-            show_board(state)
+            show_board(state,actions)
             movement=input("Insert your movement coordinates\n")
-            state=result(state,interpretate(movement))
-            while state!=None:
+            state=result(state,interpretate(movement,actions))
+            while state==None:
                 print("Invalid Movement, please try again with other movement\n")
+                movement=input("Insert your movement coordinates\n")
                 state=result(state,interpretate(movement,actions))
-            show_board(state)
+            show_board(state,actions)
             winner=is_a_winner(state,actions)
-    return interpretate(nextMove)
+    return winner
     
 
 
@@ -160,32 +199,39 @@ def tests():
     actions=9
     winner=None
     while winner==None:
-        nextMove,v=Max_Min(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
+        nextMove,v=Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
         print("The machine did the next movement :", nextMove)
         state=result(state,nextMove)
-        show_board(state)
-        nextMove,v=Min_Max(state,actions)#Aqui capaz se deberia hacer un depcopy del estado
+        show_board(state,actions)
+        nextMove,v=Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
         print("The machine did the next movement :", nextMove)
         state=result(state,nextMove)
-        show_board(state)
+        show_board(state,actions)
         winner=is_a_winner(state,actions)
 
 # Main Function
 def main():
-    # initial_State=[]
-    # play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O")
-    # diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)")
-    # if diff==1:
-    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
-    #     actions=9
-    # elif diff==2:
-    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
-    #     actions=16
-    # elif diff==3:
-    #     initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
-    #     actions=25        
-    # play_game(initial_State,actions,play)
-    tests()
+    initial_State=[]
+    actions=0
+    play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
+    diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
+    if diff=='1':
+        initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+        actions=9
+    elif diff=='2':
+        initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
+        actions=16
+    elif diff=='3':
+        initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
+        actions=25        
+    winner=play_game(initial_State,actions,play)
+    if winner==1:
+        print("Gano las X")
+    elif winner==-1:
+        print("Gano las O")
+    else:
+        print("Empate")
+    # tests()
 
 if __name__ == '__main__':
     main()
