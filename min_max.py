@@ -19,7 +19,7 @@ def terminal_state(state,actions):
 def Min_Max(state,actions):
     v=-inf 
     s_act=None
-    print(state)
+    #print(state)
     for action in range(actions):
         nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:            
@@ -171,25 +171,29 @@ def play_game(state,actions,type_player):
                 movement=input("Insert your movement coordinates\n")
                 state=result(state,interpretate(movement,actions))
             show_board(state,actions)
-            nextMove,v=Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
-            print("The machine did the next movement :", nextMove)
-            state=result(state,nextMove)
-            show_board(state,actions)
             winner=is_a_winner(state,actions)
+            if winner==None:
+                nextMove,v=Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+                print("The machine did the next movement :", nextMove)
+                state=result(state,nextMove)
+                show_board(state,actions)
+                winner=is_a_winner(state,actions)
     else:
          while winner==None:
-            nextMove,v=Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+            nextMove,v=Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado            
             print("The machine did the next movement :", nextMove)
             state=result(state,nextMove)
             show_board(state,actions)
-            movement=input("Insert your movement coordinates\n")
-            state=result(state,interpretate(movement,actions))
-            while state==None:
-                print("Invalid Movement, please try again with other movement\n")
+            winner=is_a_winner(state,actions)
+            if winner==None:
                 movement=input("Insert your movement coordinates\n")
                 state=result(state,interpretate(movement,actions))
-            show_board(state,actions)
-            winner=is_a_winner(state,actions)
+                while state==None:
+                    print("Invalid Movement, please try again with other movement\n")
+                    movement=input("Insert your movement coordinates\n")
+                    state=result(state,interpretate(movement,actions))
+                show_board(state,actions)
+                winner=is_a_winner(state,actions)
     return winner
     
 
@@ -199,39 +203,41 @@ def tests():
     actions=9
     winner=None
     while winner==None:
-        nextMove,v=Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
-        print("The machine did the next movement :", nextMove)
-        state=result(state,nextMove)
-        show_board(state,actions)
         nextMove,v=Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
         print("The machine did the next movement :", nextMove)
         state=result(state,nextMove)
         show_board(state,actions)
         winner=is_a_winner(state,actions)
+        if winner==None:
+            nextMove,v=Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+            print("The machine did the next movement :", nextMove)
+            state=result(state,nextMove)
+            show_board(state,actions)
+            winner=is_a_winner(state,actions)
 
 # Main Function
 def main():
-    initial_State=[]
-    actions=0
-    play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
-    diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
-    if diff=='1':
-        initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
-        actions=9
-    elif diff=='2':
-        initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
-        actions=16
-    elif diff=='3':
-        initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
-        actions=25        
-    winner=play_game(initial_State,actions,play)
-    if winner==1:
-        print("Gano las X")
-    elif winner==-1:
-        print("Gano las O")
-    else:
-        print("Empate")
-    # tests()
+    # initial_State=[]
+    # actions=0
+    # play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
+    # diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
+    # if diff=='1':
+    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+    #     actions=9
+    # elif diff=='2':
+    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
+    #     actions=16
+    # elif diff=='3':
+    #     initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
+    #     actions=25        
+    # winner=play_game(initial_State,actions,play)
+    # if winner==1:
+    #     print("Gano las X")
+    # elif winner==-1:
+    #     print("Gano las O")
+    # else:
+    #     print("Empate")
+    tests()
 
 if __name__ == '__main__':
     main()
