@@ -47,7 +47,7 @@ def min_value(state, actions):
         return evalRes
     v=inf
     for action in range(actions):
-        nextAction=result(state,action)
+        nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:
             v=min(v,max_value(nextAction,actions))
     return v
@@ -59,7 +59,7 @@ def max_value(state, actions):
         return evalRes
     v=-inf
     for action in range(actions):
-        nextAction=result(state,action)
+        nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:
             v=max(v,min_value(nextAction,actions))
     return v
