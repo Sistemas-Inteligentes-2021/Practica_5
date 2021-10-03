@@ -16,56 +16,56 @@ def terminal_state(state,actions):
     return is_a_winner(state,actions)
  
 
-def Min_Max_Alfa_Beta(state,actions):
+def Alfa_Beta_Min_Max(state,actions):
     v=-inf 
     s_act=None
-    print(state)
+    #print(state)
     for action in range(actions):
         nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:            
-            val=min_value(nextAction,-inf,inf,actions)            
+            val=min_value(nextAction,actions,-inf,inf)
             if val >= v :
                 v=val
                 s_act=action
     return s_act,v
     
-def Max_Min_Alfa_Beta(state,actions):
+def Alfa_Beta_Max_Min(state,actions):
     v=inf 
     s_act=None
     for action in range(actions):
         nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:
-            val=max_value(nextAction,-inf,inf,actions)
+            val=max_value(nextAction,actions,-inf,inf)
             if val <= v :
                 v=val
                 s_act=action
     return s_act,v
 
-def min_value(state,alfa,betha, actions):
+def min_value(state, actions,alfa,beta):
     evalRes=terminal_state(state,actions)
     if evalRes!=None:
         return evalRes
     v=inf
     for action in range(actions):
-        nextAction=result(state,action)
+        nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:
-            v=min(v,max_value(nextAction,alfa,betha,actions))
-            if (v<=alfa):
+            v=min(v,max_value(nextAction,actions,alfa,beta))
+            if v<=alfa:
                 return v
-            betha=min(betha,v)
+            beta=min(beta,v)
     return v
 
 
-def max_value(state,alfa,betha, actions):
+def max_value(state, actions,alfa,beta):
     evalRes=terminal_state(state,actions)
     if evalRes!=None:
         return evalRes
     v=-inf
     for action in range(actions):
-        nextAction=result(state,action)
+        nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:
-            v=max(v,min_value(nextAction,alfa,betha,actions))
-            if (v>=betha):
+            v=max(v,min_value(nextAction,actions,alfa,beta))
+            if v>=beta:
                 return v
             alfa=max(alfa,v)
     return v
@@ -177,25 +177,29 @@ def play_game(state,actions,type_player):
                 movement=input("Insert your movement coordinates\n")
                 state=result(state,interpretate(movement,actions))
             show_board(state,actions)
-            nextMove,v=Min_Max_Alfa_Beta(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
-            print("The machine did the next movement :", nextMove)
-            state=result(state,nextMove)
-            show_board(state,actions)
             winner=is_a_winner(state,actions)
+            if winner==None:
+                nextMove,v=Alfa_Beta_Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+                print("The machine did the next movement :", nextMove)
+                state=result(state,nextMove)
+                show_board(state,actions)
+                winner=is_a_winner(state,actions)
     else:
          while winner==None:
-            nextMove,v=Max_Min_Alfa_Beta(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+            nextMove,v=Alfa_Beta_Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado            
             print("The machine did the next movement :", nextMove)
             state=result(state,nextMove)
             show_board(state,actions)
-            movement=input("Insert your movement coordinates\n")
-            state=result(state,interpretate(movement,actions))
-            while state==None:
-                print("Invalid Movement, please try again with other movement\n")
+            winner=is_a_winner(state,actions)
+            if winner==None:
                 movement=input("Insert your movement coordinates\n")
                 state=result(state,interpretate(movement,actions))
-            show_board(state,actions)
-            winner=is_a_winner(state,actions)
+                while state==None:
+                    print("Invalid Movement, please try again with other movement\n")
+                    movement=input("Insert your movement coordinates\n")
+                    state=result(state,interpretate(movement,actions))
+                show_board(state,actions)
+                winner=is_a_winner(state,actions)
     return winner
     
 
@@ -205,15 +209,17 @@ def tests():
     actions=9
     winner=None
     while winner==None:
-        nextMove,v=Max_Min_Alfa_Beta(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
-        print("The machine did the next movement :", nextMove)
-        state=result(state,nextMove)
-        show_board(state,actions)
-        nextMove,v=Min_Max_Alfa_Beta(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+        nextMove,v=Alfa_Beta_Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
         print("The machine did the next movement :", nextMove)
         state=result(state,nextMove)
         show_board(state,actions)
         winner=is_a_winner(state,actions)
+        if winner==None:
+            nextMove,v=Alfa_Beta_Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+            print("The machine did the next movement :", nextMove)
+            state=result(state,nextMove)
+            show_board(state,actions)
+            winner=is_a_winner(state,actions)
 
 # Main Function
 def main():
