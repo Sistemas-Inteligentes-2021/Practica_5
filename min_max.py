@@ -2,6 +2,7 @@
 from math import inf, sqrt
 from tabulate import tabulate
 import copy
+from time import time
 
 max_depth=3
 
@@ -160,6 +161,7 @@ def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw (
 
 
 def play_game(state,actions,type_player):
+    actions_time = []
     winner=None
     if type_player=='1':
         while winner==None:
@@ -173,18 +175,29 @@ def play_game(state,actions,type_player):
             show_board(state,actions)
             winner=is_a_winner(state,actions)
             if winner==None:
+                start_time = time()                                 # START Timer
+                
                 nextMove,v=Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
                 print("The machine did the next movement :", nextMove)
                 state=result(state,nextMove)
                 show_board(state,actions)
                 winner=is_a_winner(state,actions)
+
+                end_time = time() - start_time                      # END Timer
+                actions_time.append(end_time)
     else:
          while winner==None:
+            start_time = time()                                 # START Timer
+            
             nextMove,v=Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado            
             print("The machine did the next movement :", nextMove)
             state=result(state,nextMove)
             show_board(state,actions)
             winner=is_a_winner(state,actions)
+            
+            end_time = time() - start_time                      # END Timer
+            actions_time.append(end_time)
+            
             if winner==None:
                 movement=input("Insert your movement coordinates\n")
                 state=result(state,interpretate(movement,actions))
@@ -194,6 +207,9 @@ def play_game(state,actions,type_player):
                     state=result(state,interpretate(movement,actions))
                 show_board(state,actions)
                 winner=is_a_winner(state,actions)
+    avg_time = sum(actions_time) / len(actions_time)
+    print('Time Avarage: ', avg_time)
+    print(actions_time)
     return winner
     
 
@@ -217,27 +233,27 @@ def tests():
 
 # Main Function
 def main():
-    # initial_State=[]
-    # actions=0
-    # play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
-    # diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
-    # if diff=='1':
-    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
-    #     actions=9
-    # elif diff=='2':
-    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
-    #     actions=16
-    # elif diff=='3':
-    #     initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
-    #     actions=25        
-    # winner=play_game(initial_State,actions,play)
-    # if winner==1:
-    #     print("Gano las X")
-    # elif winner==-1:
-    #     print("Gano las O")
-    # else:
-    #     print("Empate")
-    tests()
+    initial_State=[]
+    actions=0
+    play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
+    diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
+    if diff=='1':
+        initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+        actions=9
+    elif diff=='2':
+        initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
+        actions=16
+    elif diff=='3':
+        initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
+        actions=25        
+    winner=play_game(initial_State,actions,play)
+    if winner==1:
+        print("Gano las X")
+    elif winner==-1:
+        print("Gano las O")
+    else:
+        print("Empate")
+    # tests()
 
 if __name__ == '__main__':
     main()
