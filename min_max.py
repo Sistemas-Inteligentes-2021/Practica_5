@@ -5,6 +5,7 @@ import copy
 from time import time
 
 max_depth=3
+space = 0
 
 def result(state,action): #TRansiction function
     player = 'O' if state.count(' ')%2==0 else 'X'
@@ -17,7 +18,10 @@ def terminal_state(state,actions):
     return is_a_winner(state,actions)
  
 
-def Min_Max(state,actions):
+def Min_Max(state,actions, space_counter):
+    global space
+    space = 0
+
     v=-inf 
     s_act=None
     #print(state)
@@ -28,9 +32,14 @@ def Min_Max(state,actions):
             if val >= v :
                 v=val
                 s_act=action
+    space_counter.append(space)
+    print(space)
     return s_act,v
     
-def Max_Min(state,actions):
+def Max_Min(state,actions, space_counter):
+    global space
+    space = 0
+
     v=inf 
     s_act=None
     for action in range(actions):
@@ -40,9 +49,12 @@ def Max_Min(state,actions):
             if val <= v :
                 v=val
                 s_act=action
+    space_counter.append(space)
+    print(space)
     return s_act,v
 
 def min_value(state, actions):
+    global space
     evalRes=terminal_state(state,actions)
     if evalRes!=None:
         return evalRes
@@ -50,11 +62,13 @@ def min_value(state, actions):
     for action in range(actions):
         nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:
+            space += 1
             v=min(v,max_value(nextAction,actions))
     return v
 
 
 def max_value(state, actions):
+    global space
     evalRes=terminal_state(state,actions)
     if evalRes!=None:
         return evalRes
@@ -62,8 +76,10 @@ def max_value(state, actions):
     for action in range(actions):
         nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:
+            space += 1
             v=max(v,min_value(nextAction,actions))
     return v
+
 def split_list(my_list, wanted_parts):
     length = len(my_list)
     return [ my_list[i*length // wanted_parts: (i+1)*length // wanted_parts] 
@@ -162,6 +178,9 @@ def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw (
 
 def play_game(state,actions,type_player):
     actions_time = []
+    space_counter = []
+    global space
+    space = 0
     winner=None
     if type_player=='1':
         while winner==None:
@@ -177,7 +196,7 @@ def play_game(state,actions,type_player):
             if winner==None:
                 start_time = time()                                 # START Timer
                 
-                nextMove,v=Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+                nextMove,v=Max_Min(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado
                 print("The machine did the next movement :", nextMove)
                 state=result(state,nextMove)
                 show_board(state,actions)
@@ -189,7 +208,7 @@ def play_game(state,actions,type_player):
          while winner==None:
             start_time = time()                                 # START Timer
             
-            nextMove,v=Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado            
+            nextMove,v=Min_Max(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado            
             print("The machine did the next movement :", nextMove)
             state=result(state,nextMove)
             show_board(state,actions)
@@ -210,6 +229,9 @@ def play_game(state,actions,type_player):
     avg_time = sum(actions_time) / len(actions_time)
     print('Time Avarage: ', avg_time)
     print(actions_time)
+
+    print('Space Counter: ', end='')
+    print(space_counter)
     return winner
     
 
