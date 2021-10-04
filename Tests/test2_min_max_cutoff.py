@@ -21,6 +21,7 @@ def cut_off(state,depth):
     return depth==max_depth
  
 def eval(state,actions):  #Funcion heurisitca
+    
     print("Eval")
 
 def Min_Max_Cut_Off(state,actions):
