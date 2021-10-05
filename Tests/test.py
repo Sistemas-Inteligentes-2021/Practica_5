@@ -29,9 +29,93 @@ b=-inf
 
 # print(interpretate("D3",25))
 
+def count_columns(state,sym,num_sym,size):
+    lines=0
+    for n in range(size):
+        sym_state=0
+        blank_space=0
+        i=0
+        while i < size:
+            if(state[(i*size)+n]==sym):
+                sym_state=sym_state+1
+            elif(state[(i*size)+n]==''):
+                blank_space=blank_space+1
+            if(num_sym==sym_state and blank_space == size-num_sym):
+                lines=lines+1
+            i=i+1
+        # if(state[n]==sym):
+        #     sym_state=sym_state+1
+        # elif(state[n]==''):
+        #     blank_space=blank_space+1
+        # if(state[n+size]==sym):
+        #     sym_state=sym_state+1
+        # elif(state[n+size]==''):
+        #     blank_space=blank_space+1
+        # if(state[n+size*2]==sym):
+        #     sym_state=sym_state+1
+        # elif(state[n+size*2]==''):
+        #     blank_space=blank_space+1
+        # if(num_sym==sym_state and blank_space == size-num_sym):
+        #     lines=lines+1
+    return lines
+def count_rows(state,sym,num_sym,size):
+    lines=0
+    for n in range(size):
+        sym_state=0
+        blank_space=0
+        i=0
+        while i < size:
+            if(state[i+(n*size)]==sym):
+                sym_state=sym_state+1
+            elif(state[i+(n*size)]==''):
+                blank_space=blank_space+1
+            if(num_sym==sym_state and blank_space == size-num_sym):
+                lines=lines+1
+            i=i+1
+    return lines
+
+def count_diagonals(state,sym,num_sym,size):
+    lines=0
+    sym_state=0
+    blank_space=0
+    for n in range(size):
+        if state[(size+1)*n]==sym:
+            sym_state=sym_state+1
+        elif state[(size+1)*n]=='':
+            blank_space=blank_space+1
+        if(num_sym==sym_state and blank_space == size-num_sym):
+            lines=lines+1
+    sym_state=0
+    blank_space=0
+    for n in range(size):
+        if state[(n+1)*(size-1)]==sym:
+            sym_state=sym_state+1
+        elif state[(n+1)*(size-1)]=='':
+            blank_space=blank_space+1
+        if(num_sym==sym_state and blank_space == size-num_sym):
+            lines=lines+1
+    return lines
+
+def count_lines(state,size,sym,num_sym):
+    lines=count_rows(state,sym,num_sym,size)
+    lines=lines+count_columns(state,sym,num_sym,size)
+    lines=lines+count_diagonals(state,sym,num_sym,size)
+    return lines
+
+def eval(state,actions):
+    size=int(sqrt(actions))
+    x2=count_lines(state,size,'X',2)
+    x1=count_lines(state,size,'X',1)
+    o2=count_lines(state,size,'O',2)
+    o1=count_lines(state,size,'O',1)
+    return 3 * x2 + x1 - (3 * o2 + o1)
+
+state=['O','X','O','','X','','X','','O']
+# print(count_diagonals(state,'X',1,3))
+print(eval(state,9))
 
 
-print(0%2)
+
 
 
 
