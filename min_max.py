@@ -2,57 +2,59 @@
 from math import inf, sqrt
 from tabulate import tabulate
 import copy
-from time import monotonic, time
+from time import time
 
-max_depth=3
+# Vars
+# max_depth=3
 space = 0
 
-def result(state,action): #TRansiction function
+# Play_Move: Transiction function
+def play_move(state,action):
     player = 'O' if state.count(' ')%2==0 else 'X'
     if state[action]!=' ':
         return None
     state[action]=player
     return state
 
+# Terminal_State: Player Won?
 def terminal_state(state,actions):
     return is_a_winner(state,actions)
  
-
-def Min_Max(state,actions, space_counter):
+# min_max: 
+def min_max(state,actions, space_counter):
     global space
     space = 0
-
     v=-inf 
     s_act=None
-    #print(state)
     for action in range(actions):
-        nextAction=result(copy.deepcopy(state),action)
+        nextAction=play_move(copy.deepcopy(state),action)
         if nextAction!=None:            
             val=min_value(nextAction,actions)            
             if val >= v :
                 v=val
                 s_act=action
     space_counter.append(space)
-    print(space)
+    print('Spaces to do this movement: ',space)
     return s_act,v
-    
-def Max_Min(state,actions, space_counter):
+
+# max_min: 
+def max_min(state,actions, space_counter):
     global space
     space = 0
-
     v=inf 
     s_act=None
     for action in range(actions):
-        nextAction=result(copy.deepcopy(state),action)
+        nextAction=play_move(copy.deepcopy(state),action)
         if nextAction!=None:
             val=max_value(nextAction,actions)
             if val <= v :
                 v=val
                 s_act=action
     space_counter.append(space)
-    print(space)
+    print('Spaces to do this movement: ',space)
     return s_act,v
 
+# Min_Value: 
 def min_value(state, actions):
     global space
     evalRes=terminal_state(state,actions)
@@ -60,13 +62,13 @@ def min_value(state, actions):
         return evalRes
     v=inf
     for action in range(actions):
-        nextAction=result(copy.deepcopy(state),action)
+        nextAction=play_move(copy.deepcopy(state),action)
         if nextAction!=None:
             space += 1
             v=min(v,max_value(nextAction,actions))
     return v
 
-
+# Max_Value: 
 def max_value(state, actions):
     global space
     evalRes=terminal_state(state,actions)
@@ -74,12 +76,13 @@ def max_value(state, actions):
         return evalRes
     v=-inf
     for action in range(actions):
-        nextAction=result(copy.deepcopy(state),action)
+        nextAction=play_move(copy.deepcopy(state),action)
         if nextAction!=None:
             space += 1
             v=max(v,min_value(nextAction,actions))
     return v
 
+# Split_List: 
 def split_list(my_list, wanted_parts):
     length = len(my_list)
     return [ my_list[i*length // wanted_parts: (i+1)*length // wanted_parts] 
@@ -91,26 +94,27 @@ def show_board(my_list, size):
     item = split_list(my_list, n_parts)
     table = tabulate(item, tablefmt="fancy_grid")
     print(table)
-    #print('\n')
+    print('\n:------------------:\n')
 
-def interpretate(movement,actions):#INTERPRETATE the movemente given by the human player
+# Interpretate: Movement A1 -> 1
+def interpretate(movement,actions):
     size=int(sqrt(actions))
     value=size*(int(movement[1])-1)+(ord(movement[0])-65)
     return value
 
+# Interpretate_Computer: Movement 1 -> A1
 def interpretate_Computer(movement,actions):
-    New_movement=movement-1;
     size=int(sqrt(actions))
-    letter=chr(65+New_movement%size)
-    num=str(int(New_movement/size)+1)
+    mod = movement % size
+    letter=chr(65+mod)
+    num=str(int(movement/size)+1)
     return letter+num
 
+# Verify_Rows: Verify the jump of row
 def veriy_rows(state,actions,size):
-    #rows
     x_counter=0
     o_counter=0
     for i in range(actions):
-        #verify the jump of row
         if i % size ==0:
             x_counter=0
             o_counter=0
@@ -124,7 +128,7 @@ def veriy_rows(state,actions,size):
             return -1
     return None
 
-
+# Verify_Columns: 
 def veriy_columns(state,actions,size):
     for i in range(size):
         x_counter=0
@@ -140,6 +144,7 @@ def veriy_columns(state,actions,size):
             return -1
     return None
 
+# Verify_Diagonals: 
 def verify_diagonals(state,actions,size):
     x_counter=0
     o_counter=0
@@ -165,7 +170,8 @@ def verify_diagonals(state,actions,size):
         return -1
     return None
 
-def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw ( 0 ) or none
+# Is_A_Winner: Verify if it is a winner(X - 1  O - -1), draw ( 0 ) or none
+def is_a_winner(state,actions):
     size=int(sqrt(actions))
     winner=veriy_rows(state,actions,size)
     if winner!=None:
@@ -176,62 +182,71 @@ def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw (
     winner=verify_diagonals(state,actions,size)
     if winner!=None:
         return winner
-    #draw
     if state.count(' ')==0:
         return 0
     return None
 
+# Interpretate_Computer: Movement 1 -> A1
+def interpretate_computer(movement,actions):
+    size=int(sqrt(actions))
+    mod = movement % size
+    letter=chr(65+mod)
+    num=str(int(movement/size)+1)
+    return letter+num
 
+# Play_Game:  
 def play_game(state,actions,type_player):
     actions_time = []
     space_counter = []
-    global space
-    space = 0
     winner=None
-    if type_player=='1':
+
+    if type_player=='X':
         while winner==None:
-            show_board(state,actions)
-            movement=input("Insert your movement coordinates\n")
-            state=result(state,interpretate(movement,actions))
-            while state==None:
-                print("Invalid Movement, please try again with other movement\n")
-                movement=input("Insert your movement coordinates\n")
-                state=result(state,interpretate(movement,actions))
+            movement=input('Choose where to place (coordinates): ')
+            new_state=play_move(state,interpretate(movement,actions))
+
+            while new_state==None:
+                print('Invalid Movement! Choose again.')
+                movement = input('Choose where to place (coordinates): ')
+                new_state=play_move(state,interpretate(movement,actions))
+
+            state = new_state
             show_board(state,actions)
             winner=is_a_winner(state,actions)
+
             if winner==None:
-                start_time = time()                                 # START Timer
-                
-                nextMove,v=Max_Min(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado
-                print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
-                state=result(state,nextMove)
+                start_time = time()                                 # Start Timer
+                nextMove,v=max_min(copy.deepcopy(state),actions,space_counter)
+                print("The Machine did the Movement: ", interpretate_computer(nextMove,actions))
+                state=play_move(state,nextMove)
                 show_board(state,actions)
                 winner=is_a_winner(state,actions)
-
-                end_time = time() - start_time                      # END Timer
+                end_time = time() - start_time                      # End Timer                
                 actions_time.append(end_time)
     else:
          while winner==None:
-            start_time = time()                                 # START Timer
-            
-            nextMove,v=Min_Max(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado            
-            print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
-            state=result(state,nextMove)
+            start_time = time()                                     # Start Timer
+            nextMove,v=min_max(copy.deepcopy(state),actions,space_counter)           
+            print("The Machine did the Movement: ", interpretate_computer(nextMove,actions))
+            state=play_move(state,nextMove)
             show_board(state,actions)
             winner=is_a_winner(state,actions)
-            
-            end_time = time() - start_time                      # END Timer
+            end_time = time() - start_time                          # End Timer                     
             actions_time.append(end_time)
             
             if winner==None:
-                movement=input("Insert your movement coordinates\n")
-                state=result(state,interpretate(movement,actions))
-                while state==None:
-                    print("Invalid Movement, please try again with other movement\n")
-                    movement=input("Insert your movement coordinates\n")
-                    state=result(state,interpretate(movement,actions))
+                movement=input('Choose where to place (coordinates): ')
+                new_state=play_move(state,interpretate(movement,actions))
+               
+                while new_state==None:
+                    print('Invalid Movement! Choose again.')
+                    movement = input('Choose where to place (coordinates): ')
+                    new_state=play_move(state,interpretate(movement,actions))
+
+                state = new_state
                 show_board(state,actions)
                 winner=is_a_winner(state,actions)
+
     avg_time = sum(actions_time) / len(actions_time)
     print('Time Avarage: ', avg_time)
     print(actions_time)
@@ -239,50 +254,62 @@ def play_game(state,actions,type_player):
     print('Space Counter: ', end='')
     print(space_counter)
     return winner
-    
 
+# Setup_Controls: Select Player X or Player O 
+def setup_controls():
+    # print('*** Game Made By: Adrian Mendoza - Daniel Camacho - Jhuslan Vargas ***\n')
+    print('\n*** Welcome Pretty Human to Tic Tac Toe Game ***')
+    player_choice = input("Pick the type of your chip (X - O): ")
+    player = ""
+    if player_choice == 'x' or player_choice == 'X' :
+        player = "X"
+    else:
+        if player_choice == 'o' or player_choice == 'O':
+            player = "O"
+        else:
+            print('--- Try Again ---')
+            player = setup_controls()
+    print('You are the player: ' + player)
+    return player
 
-def tests():
-    space_counter = []
-    state=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
-    actions=9
-    winner=None
-    while winner==None:
-        nextMove,v=Min_Max(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado
-        print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
-        state=result(state,nextMove)
-        show_board(state,actions)
-        winner=is_a_winner(state,actions)
-        if winner==None:
-            nextMove,v=Max_Min(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado
-            print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
-            state=result(state,nextMove)
-            show_board(state,actions)
-            winner=is_a_winner(state,actions)
+# Setup_Difficult: Easy, Medium or Hard
+def setup_difficult():
+    print('\nChoose the difficuly')
+    print('1 - Easy (3x3)')
+    print('2 - Medium (4x4)')
+    print('3 - Hard (5x5)')
+    difficult = input("Please choose the difficult: ")
+    initial_state = []
+    if difficult=='1':
+        initial_state=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+        actions=9
+    elif difficult=='2':
+        initial_state=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
+        actions=16
+    elif difficult=='3':
+        initial_state=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
+        actions=25   
+    print('\n:------------------:\n')
+    return initial_state, actions
+
+# Display_Winner: Player X, Player O or Tie
+def display_winner(winner):
+    print('\n:--------  ', end='')
+    if winner==1:
+        print("xxx PLAYER X WON xxx", end='')
+    elif winner==-1:
+        print("ooo PLAYER O WON ooo", end='')
+    else:
+        print("xox TIE xox", end='')
+    print('  --------:\n')
 
 # Main Function
 def main():
-    initial_State=[]
-    actions=0
-    play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
-    diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
-    if diff=='1':
-        initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
-        actions=9
-    elif diff=='2':
-        initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
-        actions=16
-    elif diff=='3':
-        initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
-        actions=25        
-    winner=play_game(initial_State,actions,play)
-    if winner==1:
-        print("Gano las X")
-    elif winner==-1:
-        print("Gano las O")
-    else:
-        print("Empate")
-    #tests()
+    player_choice = setup_controls()
+    initial_state, actions = setup_difficult()
+    winner=play_game(initial_state, actions, player_choice)
+    display_winner(winner)
+    print('*** Game Made By: Adrian Mendoza - Daniel Camacho - Jhuslan Vargas ***\n')
 
 if __name__ == '__main__':
     main()

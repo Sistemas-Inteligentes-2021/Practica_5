@@ -5,7 +5,9 @@ import copy
 from time import time
 
 # Vars
-max_depth=5
+max_depth=5             # 3 x 3
+# max_depth=3           # 4 x 4
+# max_depth=3           # 5 x 5
 space = 0
 
 # Play_Move: Transiction function
@@ -129,7 +131,7 @@ def max_min_cut_off(state,actions,space_counter):
                 v=val
                 s_act=action
     space_counter.append(space)
-    print(space)
+    print('Spaces to do this movement: ',space)
     return s_act,v
 
 # Min_Value: 
@@ -166,7 +168,6 @@ def max_value(state, actions,alfa,beta,depth):
             space+=1
             v=max(v,min_value(nextAction,actions,alfa,beta,depth+1))
             if v>=beta:
-
                 return v
             alfa=max(alfa,v)
     return v
@@ -282,7 +283,6 @@ def play_game(state,actions,type_player):
     winner=None
 
     if type_player=='X':
-
         while winner==None:
             movement=input('Choose where to place (coordinates): ')
             new_state=play_move(state,interpretate(movement,actions))
@@ -332,6 +332,7 @@ def play_game(state,actions,type_player):
     avg_time = sum(actions_time) / len(actions_time)                # Avarage Timer
     print('Time Avarage: ', avg_time)
     print(actions_time)
+
     print('Space Counter: ', end='')                                # Space Timer
     print(space_counter)
     return winner
@@ -390,7 +391,7 @@ def main():
     initial_state, actions = setup_difficult()
     winner=play_game(initial_state, actions, player_choice)
     display_winner(winner)
-    # print('*** Game Made By: Adrian Mendoza - Daniel Camacho - Jhuslan Vargas ***\n')
+    print('*** Game Made By: Adrian Mendoza - Daniel Camacho - Jhuslan Vargas ***\n')
 
 # :------------:
 if __name__ == '__main__':
