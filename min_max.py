@@ -262,27 +262,27 @@ def tests():
 
 # Main Function
 def main():
-    # initial_State=[]
-    # actions=0
-    # play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
-    # diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
-    # if diff=='1':
-    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
-    #     actions=9
-    # elif diff=='2':
-    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
-    #     actions=16
-    # elif diff=='3':
-    #     initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
-    #     actions=25        
-    # winner=play_game(initial_State,actions,play)
-    # if winner==1:
-    #     print("Gano las X")
-    # elif winner==-1:
-    #     print("Gano las O")
-    # else:
-    #     print("Empate")
-    tests()
+    initial_State=[]
+    actions=0
+    play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
+    diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
+    if diff=='1':
+        initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+        actions=9
+    elif diff=='2':
+        initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
+        actions=16
+    elif diff=='3':
+        initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
+        actions=25        
+    winner=play_game(initial_State,actions,play)
+    if winner==1:
+        print("Gano las X")
+    elif winner==-1:
+        print("Gano las O")
+    else:
+        print("Empate")
+    #tests()
 
 if __name__ == '__main__':
     main()

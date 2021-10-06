@@ -4,7 +4,8 @@ from tabulate import tabulate
 import copy
 from time import time
 
-max_depth=5
+max_depth=3
+space = 0
 
 def result(state,action): #TRansiction function
     player = 'O' if state.count(' ')%2==0 else 'X'
@@ -88,7 +89,9 @@ def eval(state,actions):
         return 5*count_lines(state,size,'X',4)+count_lines(state,size,'X',3)+count_lines(state,size,'X',2)+count_lines(state,size,'X',1)-(5*count_lines(state,size,'O',4)+count_lines(state,size,'O',3)+count_lines(state,size,'O',2)+count_lines(state,size,'O',1))
     
 
-def min_max_cut_off(state,actions):
+def min_max_cut_off(state,actions,space_counter):
+    global space
+    space = 0
     v=-inf 
     s_act=None
     #print(state)
@@ -99,9 +102,13 @@ def min_max_cut_off(state,actions):
             if val >= v :
                 v=val
                 s_act=action
+    space_counter.append(space)
+    print(space)
     return s_act,v
     
-def max_min_cut_off(state,actions):
+def max_min_cut_off(state,actions,space_counter):
+    global space
+    space = 0
     v=inf 
     s_act=None
     for action in range(actions):
@@ -111,9 +118,12 @@ def max_min_cut_off(state,actions):
             if val <= v :
                 v=val
                 s_act=action
+    space_counter.append(space)
+    print(space)
     return s_act,v
 
 def min_value(state, actions,alfa,beta,depth):
+    global space
     evalRes=terminal_state(state,actions)
     if evalRes!=None or cut_off(depth):
         if evalRes==None:
@@ -123,6 +133,7 @@ def min_value(state, actions,alfa,beta,depth):
     for action in range(actions):
         nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:
+            space += 1
             v=min(v,max_value(nextAction,actions,alfa,beta,depth+1))
             if v<=alfa:
                 return v
@@ -131,6 +142,7 @@ def min_value(state, actions,alfa,beta,depth):
 
 
 def max_value(state, actions,alfa,beta,depth):
+    global space
     evalRes=terminal_state(state,actions)
     if evalRes!=None or cut_off(depth):
         if evalRes==None:
@@ -140,8 +152,10 @@ def max_value(state, actions,alfa,beta,depth):
     for action in range(actions):
         nextAction=result(copy.deepcopy(state),action)
         if nextAction!=None:
+            space+=1
             v=max(v,min_value(nextAction,actions,alfa,beta,depth+1))
             if v>=beta:
+
                 return v
             alfa=max(alfa,v)
     return v
@@ -249,6 +263,9 @@ def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw (
 
 def play_game(state,actions,type_player):
     actions_time = []
+    space_counter = []
+    global space
+    space = 0
     winner=None
     if type_player=='1':
         while winner==None:
@@ -263,7 +280,7 @@ def play_game(state,actions,type_player):
             winner=is_a_winner(state,actions)
             if winner==None:
                 start_time = time()
-                nextMove,v=max_min_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+                nextMove,v=max_min_cut_off(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado
                 print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
                 state=result(state,nextMove)
                 show_board(state,actions)
@@ -273,7 +290,7 @@ def play_game(state,actions,type_player):
     else:
          while winner==None:
             start_time = time()
-            nextMove,v=min_max_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado            
+            nextMove,v=min_max_cut_off(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado            
             print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
             state=result(state,nextMove)
             show_board(state,actions)
@@ -292,6 +309,9 @@ def play_game(state,actions,type_player):
     avg_time = sum(actions_time) / len(actions_time)
     print('Time Avarage: ', avg_time)
     print(actions_time)
+
+    print('Space Counter: ', end='')
+    print(space_counter)
     return winner
     
 
@@ -317,7 +337,7 @@ def tests():
 def main():
     initial_State=[]
     actions=0
-    play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
+    play=input("Welcome to Tic Tac Toe game made by The Dream TEAM, please pick the type of your chip:\n1.-X\n2.-O\n")
     diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
     if diff=='1':
         initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
