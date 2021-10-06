@@ -1,155 +1,323 @@
-import numpy as np
-from math import inf as infinity
+# Libraries
+from math import inf, sqrt
+from tabulate import tabulate
+import copy
 
-game_state = [[' ',' ',' '],
-              [' ',' ',' '],
-              [' ',' ',' ']]
-players = ['X','O']
 
-def play_move(state, player, block_num):
-    if state[int((block_num-1)/3)][(block_num-1)%3] is ' ':
-        state[int((block_num-1)/3)][(block_num-1)%3] = player
-    else:
-        block_num = int(input("Block is not empty, ya blockhead! Choose again: "))
-        play_move(state, player, block_num)
-    
-def copy_game_state(state):
-    new_state = [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']]
-    for i in range(3):
-        for j in range(3):
-            new_state[i][j] = state[i][j]
-    return new_state
-    
-def check_current_state(game_state):
-    # Check if draw
-    draw_flag = 0
-    for i in range(3):
-        for j in range(3):
-            if game_state[i][j] is ' ':
-                draw_flag = 1
-    if draw_flag is 0:
-        return None, "Draw"
-    
-    # Check horizontals
-    if (game_state[0][0] == game_state[0][1] and game_state[0][1] == game_state[0][2] and game_state[0][0] is not ' '):
-        return game_state[0][0], "Done"
-    if (game_state[1][0] == game_state[1][1] and game_state[1][1] == game_state[1][2] and game_state[1][0] is not ' '):
-        return game_state[1][0], "Done"
-    if (game_state[2][0] == game_state[2][1] and game_state[2][1] == game_state[2][2] and game_state[2][0] is not ' '):
-        return game_state[2][0], "Done"
-    
-    # Check verticals
-    if (game_state[0][0] == game_state[1][0] and game_state[1][0] == game_state[2][0] and game_state[0][0] is not ' '):
-        return game_state[0][0], "Done"
-    if (game_state[0][1] == game_state[1][1] and game_state[1][1] == game_state[2][1] and game_state[0][1] is not ' '):
-        return game_state[0][1], "Done"
-    if (game_state[0][2] == game_state[1][2] and game_state[1][2] == game_state[2][2] and game_state[0][2] is not ' '):
-        return game_state[0][2], "Done"
-    
-    # Check diagonals
-    if (game_state[0][0] == game_state[1][1] and game_state[1][1] == game_state[2][2] and game_state[0][0] is not ' '):
-        return game_state[1][1], "Done"
-    if (game_state[2][0] == game_state[1][1] and game_state[1][1] == game_state[0][2] and game_state[2][0] is not ' '):
-        return game_state[1][1], "Done"
-    
-    return None, "Not Done"
+max_depth=3
 
-def print_board(game_state):
-    print('----------------')
-    print('| ' + str(game_state[0][0]) + ' || ' + str(game_state[0][1]) + ' || ' + str(game_state[0][2]) + ' |')
-    print('----------------')
-    print('| ' + str(game_state[1][0]) + ' || ' + str(game_state[1][1]) + ' || ' + str(game_state[1][2]) + ' |')
-    print('----------------')
-    print('| ' + str(game_state[2][0]) + ' || ' + str(game_state[2][1]) + ' || ' + str(game_state[2][2]) + ' |')
-    print('----------------')
+def result(state,action): #TRansiction function
+    player = 'O' if state.count(' ')%2==0 else 'X'
+    if state[action]!=' ':
+        return None
+    state[action]=player
+    return state
+
+def terminal_state(state,actions):
+    return is_a_winner(state,actions)
+
+def cut_off(depth):
+    return depth == max_depth
+
+def count_columns(state,sym,num_sym,size):
+    lines=0
+    for n in range(size):
+        sym_state=0
+        blank_space=0
+        i=0
+        while i < size:
+            if(state[(i*size)+n]==sym):
+                sym_state=sym_state+1
+            elif(state[(i*size)+n]==''):
+                blank_space=blank_space+1
+            if(num_sym==sym_state and blank_space == size-num_sym):
+                lines=lines+1
+            i=i+1
+    return lines
+def count_rows(state,sym,num_sym,size):
+    lines=0
+    for n in range(size):
+        sym_state=0
+        blank_space=0
+        i=0
+        while i < size:
+            if(state[i+(n*size)]==sym):
+                sym_state=sym_state+1
+            elif(state[i+(n*size)]==''):
+                blank_space=blank_space+1
+            if(num_sym==sym_state and blank_space == size-num_sym):
+                lines=lines+1
+            i=i+1
+    return lines
+
+def count_diagonals(state,sym,num_sym,size):
+    lines=0
+    sym_state=0
+    blank_space=0
+    for n in range(size):
+        if state[(size+1)*n]==sym:
+            sym_state=sym_state+1
+        elif state[(size+1)*n]=='':
+            blank_space=blank_space+1
+        if(num_sym==sym_state and blank_space == size-num_sym):
+            lines=lines+1
+    sym_state=0
+    blank_space=0
+    for n in range(size):
+        if state[(n+1)*(size-1)]==sym:
+            sym_state=sym_state+1
+        elif state[(n+1)*(size-1)]=='':
+            blank_space=blank_space+1
+        if(num_sym==sym_state and blank_space == size-num_sym):
+            lines=lines+1
+    return lines
+
+def count_lines(state,size,sym,num_sym):
+    lines=count_rows(state,sym,num_sym,size)
+    lines=lines+count_columns(state,sym,num_sym,size)
+    lines=lines+count_diagonals(state,sym,num_sym,size)
+    return lines
+
+def eval(state,actions):
+    size=int(sqrt(actions))
+    x2=count_lines(state,size,'X',2)
+    x1=count_lines(state,size,'X',1)
+    o2=count_lines(state,size,'O',2)
+    o1=count_lines(state,size,'O',1)
+    return 3 * x2 + x1 - (3 * o2 + o1)
+
+def min_max_cut_off(state,actions):
+    v=-inf 
+    s_act=None
+    #print(state)
+    for action in range(actions):
+        nextAction=result(copy.deepcopy(state),action)
+        if nextAction!=None:            
+            val=min_value(nextAction,actions,-inf,inf,0)
+            if val >= v :
+                v=val
+                s_act=action
+    return s_act,v
     
-    
-def getBestMove(state, player):
-    '''
-    Minimax Algorithm
-    '''
-    winner_loser , done = check_current_state(state)
-    if done == "Done" and winner_loser == 'O': # If AI won
+def max_min_cut_off(state,actions):
+    v=inf 
+    s_act=None
+    for action in range(actions):
+        nextAction=result(copy.deepcopy(state),action)
+        if nextAction!=None:
+            val=max_value(nextAction,actions,-inf,inf,0)
+            if val <= v :
+                v=val
+                s_act=action
+    return s_act,v
+
+def min_value(state, actions,alfa,beta,depth):
+    evalRes=terminal_state(state,actions)
+    if evalRes!=None or cut_off(depth):
+        if evalRes==None:
+            return eval(state,actions)
+        return evalRes
+    v=inf
+    for action in range(actions):
+        nextAction=result(copy.deepcopy(state),action)
+        if nextAction!=None:
+            v=min(v,max_value(nextAction,actions,alfa,beta,depth+1))
+            if v<=alfa:
+                return v
+            beta=min(beta,v)
+    return v
+
+
+def max_value(state, actions,alfa,beta,depth):
+    evalRes=terminal_state(state,actions)
+    if evalRes!=None or cut_off(depth):
+        if evalRes==None:
+            return eval(state,actions)
+        return evalRes
+    v=-inf
+    for action in range(actions):
+        nextAction=result(copy.deepcopy(state),action)
+        if nextAction!=None:
+            v=max(v,min_value(nextAction,actions,alfa,beta,depth+1))
+            if v>=beta:
+                return v
+            alfa=max(alfa,v)
+    return v
+def split_list(my_list, wanted_parts):
+    length = len(my_list)
+    return [ my_list[i*length // wanted_parts: (i+1)*length // wanted_parts] 
+             for i in range(wanted_parts) ]
+
+# Display Array in Grid
+def show_board(my_list, size):
+    n_parts = int(sqrt(size))
+    item = split_list(my_list, n_parts)
+    table = tabulate(item, tablefmt="fancy_grid")
+    print(table)
+    #print('\n')
+
+def interpretate(movement,actions):#INTERPRETATE the movemente given by the human player
+    size=int(sqrt(actions))
+    value=size*(int(movement[1])-1)+(ord(movement[0])-65)
+    return value
+
+
+def veriy_rows(state,actions,size):
+    #rows
+    x_counter=0
+    o_counter=0
+    for i in range(actions):
+        #verify the jump of row
+        if i % size ==0:
+            x_counter=0
+            o_counter=0
+        if state[i]=='X':
+            x_counter+=1
+        elif state[i]=='O':
+            o_counter+=1
+        if x_counter==size:
+            return 1
+        if o_counter==size:
+            return -1
+    return None
+
+
+def veriy_columns(state,actions,size):
+    for i in range(size):
+        x_counter=0
+        o_counter=0
+        for j in range(size):                        
+            if state[i+j*size]=='X':
+                x_counter+=1
+            elif state[i+j*size]=='O':
+                o_counter+=1
+        if x_counter==size:
+            return 1
+        if o_counter==size:
+            return -1
+    return None
+
+def verify_diagonals(state,actions,size):
+    x_counter=0
+    o_counter=0
+    for i in range(size):
+        if state[(size+1)*i]=='X':
+            x_counter+=1
+        elif state[(size+1)*i]=='O':
+            o_counter+=1
+    if x_counter==size:
         return 1
-    elif done == "Done" and winner_loser == 'X': # If Human won
+    if o_counter==size:
         return -1
-    elif done == "Draw":    # Draw condition
+    x_counter=0
+    o_counter=0
+    for i in range(size):
+        if state[(size-1)*(i+1)]=='X':
+            x_counter+=1
+        elif state[(size-1)*(i+1)]=='O':
+            o_counter+=1
+    if x_counter==size:
+        return 1
+    if o_counter==size:
+        return -1
+    return None
+
+def is_a_winner(state,actions): #Verify if it is a winner(X - 1  O - -1), draw ( 0 ) or none
+    size=int(sqrt(actions))
+    winner=veriy_rows(state,actions,size)
+    if winner!=None:
+        return winner
+    winner=veriy_columns(state,actions,size)
+    if winner!=None:
+        return winner
+    winner=verify_diagonals(state,actions,size)
+    if winner!=None:
+        return winner
+    #draw
+    if state.count(' ')==0:
         return 0
-        
-    moves = []
-    empty_cells = []
-    for i in range(3):
-        for j in range(3):
-            if state[i][j] is ' ':
-                empty_cells.append(i*3 + (j+1))
-    
-    for empty_cell in empty_cells:
-        move = {}
-        move['index'] = empty_cell
-        new_state = copy_game_state(state)
-        play_move(new_state, player, empty_cell)
-        
-        if player == 'O':    # If AI
-            result = getBestMove(new_state, 'X')    # make more depth tree for human
-            move['score'] = result
-        else:
-            result = getBestMove(new_state, 'O')    # make more depth tree for AI
-            move['score'] = result
-        
-        moves.append(move)
+    return None
 
-    # Find best move
-    best_move = None
-    if player == 'O':   # If AI player
-        best = -infinity
-        for move in moves:
-            if move['score'] > best:
-                best = move['score']
-                best_move = move['index']
-    else:
-        best = infinity
-        for move in moves:
-            if move['score'] < best:
-                best = move['score']
-                best_move = move['index']
-                
-    return best_move
 
-# PLaying
-play_again = 'Y'
-while play_again == 'Y' or play_again == 'y':
-    game_state = [[' ',' ',' '],
-              [' ',' ',' '],
-              [' ',' ',' ']]
-    current_state = "Not Done"
-    print("\nNew Game!")
-    print_board(game_state)
-    player_choice = input("Choose which player goes first - X (You - the petty human) or O(The mighty AI): ")
-    winner = None
-    
-    if player_choice == 'X' or player_choice == 'x':
-        current_player_idx = 0
+def play_game(state,actions,type_player):
+    winner=None
+    if type_player=='1':
+        while winner==None:
+            show_board(state,actions)
+            movement=input("Insert your movement coordinates\n")
+            state=result(state,interpretate(movement,actions))
+            while state==None:
+                print("Invalid Movement, please try again with other movement\n")
+                movement=input("Insert your movement coordinates\n")
+                state=result(state,interpretate(movement,actions))
+            show_board(state,actions)
+            winner=is_a_winner(state,actions)
+            if winner==None:
+                nextMove,v=max_min_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+                print("The machine did the next movement :", nextMove)
+                state=result(state,nextMove)
+                show_board(state,actions)
+                winner=is_a_winner(state,actions)
     else:
-        current_player_idx = 1
-        
-    while current_state == "Not Done":
-        if current_player_idx == 0: # Human's turn
-            block_choice = int(input("Oye Human, your turn! Choose where to place (1 to 9): "))
-            play_move(game_state ,players[current_player_idx], block_choice)
-        else:   # AI's turn
-            block_choice = getBestMove(game_state, players[current_player_idx])
-            play_move(game_state ,players[current_player_idx], block_choice)
-            print("AI plays move: " + str(block_choice))
-        print_board(game_state)
-        winner, current_state = check_current_state(game_state)
-        if winner is not None:
-            print(str(winner) + " won!")
-        else:
-            current_player_idx = (current_player_idx + 1)%2
-        
-        if current_state is "Draw":
-            print("Draw!")
-            
-    play_again = input('Wanna try again?(Y/N) : ')
-    if play_again == 'N':
-        print('GG!')
+         while winner==None:
+            nextMove,v=min_max_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado            
+            print("The machine did the next movement :", nextMove)
+            state=result(state,nextMove)
+            show_board(state,actions)
+            winner=is_a_winner(state,actions)
+            if winner==None:
+                movement=input("Insert your movement coordinates\n")
+                state=result(state,interpretate(movement,actions))
+                while state==None:
+                    print("Invalid Movement, please try again with other movement\n")
+                    movement=input("Insert your movement coordinates\n")
+                    state=result(state,interpretate(movement,actions))
+                show_board(state,actions)
+                winner=is_a_winner(state,actions)
+    return winner
+    
+
+
+def tests():
+    state=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+    actions=9
+    winner=None
+    while winner==None:
+        nextMove,v=min_max_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+        print("The machine did the next movement :", nextMove)
+        state=result(state,nextMove)
+        show_board(state,actions)
+        winner=is_a_winner(state,actions)
+        if winner==None:
+            nextMove,v=max_min_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
+            print("The machine did the next movement :", nextMove)
+            state=result(state,nextMove)
+            show_board(state,actions)
+            winner=is_a_winner(state,actions)
+
+# Main Function
+def main():
+    # initial_State=[]
+    # actions=0
+    # play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
+    # diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
+    # if diff=='1':
+    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+    #     actions=9
+    # elif diff=='2':
+    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
+    #     actions=16
+    # elif diff=='3':
+    #     initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
+    #     actions=25        
+    # winner=play_game(initial_State,actions,play)
+    # if winner==1:
+    #     print("Gano las X")
+    # elif winner==-1:
+    #     print("Gano las O")
+    # else:
+    #     print("Empate")
+    tests()
+
+if __name__ == '__main__':
+    main()
