@@ -163,6 +163,12 @@ def interpretate(movement,actions):#INTERPRETATE the movemente given by the huma
     value=size*(int(movement[1])-1)+(ord(movement[0])-65)
     return value
 
+def interpretate_Computer(movement,actions):
+    New_movement=movement-1;
+    size=int(sqrt(actions))
+    letter=chr(65+New_movement%size)
+    num=str(int(New_movement/size)+1)
+    return letter+num
 
 def veriy_rows(state,actions,size):
     #rows
@@ -258,7 +264,7 @@ def play_game(state,actions,type_player):
             if winner==None:
                 start_time = time()
                 nextMove,v=max_min_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
-                print("The machine did the next movement :", nextMove)
+                print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
                 state=result(state,nextMove)
                 show_board(state,actions)
                 winner=is_a_winner(state,actions)
@@ -268,7 +274,7 @@ def play_game(state,actions,type_player):
          while winner==None:
             start_time = time()
             nextMove,v=min_max_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado            
-            print("The machine did the next movement :", nextMove)
+            print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
             state=result(state,nextMove)
             show_board(state,actions)
             winner=is_a_winner(state,actions)
@@ -296,13 +302,13 @@ def tests():
     winner=None
     while winner==None:
         nextMove,v=min_max_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
-        print("The machine did the next movement :", nextMove)
+        print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
         state=result(state,nextMove)
         show_board(state,actions)
         winner=is_a_winner(state,actions)
         if winner==None:
             nextMove,v=max_min_cut_off(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
-            print("The machine did the next movement :", nextMove)
+            print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
             state=result(state,nextMove)
             show_board(state,actions)
             winner=is_a_winner(state,actions)

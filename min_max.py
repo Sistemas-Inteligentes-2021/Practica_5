@@ -2,7 +2,7 @@
 from math import inf, sqrt
 from tabulate import tabulate
 import copy
-from time import time
+from time import monotonic, time
 
 max_depth=3
 space = 0
@@ -98,6 +98,12 @@ def interpretate(movement,actions):#INTERPRETATE the movemente given by the huma
     value=size*(int(movement[1])-1)+(ord(movement[0])-65)
     return value
 
+def interpretate_Computer(movement,actions):
+    New_movement=movement-1;
+    size=int(sqrt(actions))
+    letter=chr(65+New_movement%size)
+    num=str(int(New_movement/size)+1)
+    return letter+num
 
 def veriy_rows(state,actions,size):
     #rows
@@ -197,7 +203,7 @@ def play_game(state,actions,type_player):
                 start_time = time()                                 # START Timer
                 
                 nextMove,v=Max_Min(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado
-                print("The machine did the next movement :", nextMove)
+                print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
                 state=result(state,nextMove)
                 show_board(state,actions)
                 winner=is_a_winner(state,actions)
@@ -209,7 +215,7 @@ def play_game(state,actions,type_player):
             start_time = time()                                 # START Timer
             
             nextMove,v=Min_Max(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado            
-            print("The machine did the next movement :", nextMove)
+            print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
             state=result(state,nextMove)
             show_board(state,actions)
             winner=is_a_winner(state,actions)
@@ -237,45 +243,46 @@ def play_game(state,actions,type_player):
 
 
 def tests():
+    space_counter = []
     state=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
     actions=9
     winner=None
     while winner==None:
-        nextMove,v=Min_Max(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
-        print("The machine did the next movement :", nextMove)
+        nextMove,v=Min_Max(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado
+        print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
         state=result(state,nextMove)
         show_board(state,actions)
         winner=is_a_winner(state,actions)
         if winner==None:
-            nextMove,v=Max_Min(copy.deepcopy(state),actions)#Aqui capaz se deberia hacer un depcopy del estado
-            print("The machine did the next movement :", nextMove)
+            nextMove,v=Max_Min(copy.deepcopy(state),actions,space_counter)#Aqui capaz se deberia hacer un depcopy del estado
+            print("The machine did the next movement :", interpretate_Computer(nextMove,actions))
             state=result(state,nextMove)
             show_board(state,actions)
             winner=is_a_winner(state,actions)
 
 # Main Function
 def main():
-    initial_State=[]
-    actions=0
-    play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
-    diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
-    if diff=='1':
-        initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
-        actions=9
-    elif diff=='2':
-        initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
-        actions=16
-    elif diff=='3':
-        initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
-        actions=25        
-    winner=play_game(initial_State,actions,play)
-    if winner==1:
-        print("Gano las X")
-    elif winner==-1:
-        print("Gano las O")
-    else:
-        print("Empate")
-    # tests()
+    # initial_State=[]
+    # actions=0
+    # play=input("Welcome to Tic Tac Toe game made by DaniCam, please pick the type of your chip:\n1.-X\n2.-O\n")
+    # diff=input("Nice job now lets choose the difficuly of the game:\nPlease choose the difficulty\n1.-Easy(3x3)\n2.-InterMediate(4x4)\n3.-Hard(5x5)\n")
+    # if diff=='1':
+    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ',' ', ' ', ' ']
+    #     actions=9
+    # elif diff=='2':
+    #     initial_State=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
+    #     actions=16
+    # elif diff=='3':
+    #     initial_State=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
+    #     actions=25        
+    # winner=play_game(initial_State,actions,play)
+    # if winner==1:
+    #     print("Gano las X")
+    # elif winner==-1:
+    #     print("Gano las O")
+    # else:
+    #     print("Empate")
+    tests()
 
 if __name__ == '__main__':
     main()

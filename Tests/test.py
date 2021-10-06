@@ -146,3 +146,12 @@ print(eval(state,9))
 #   }
 #   return t;
 # }
+
+def interpretate_Computer(movement,actions):
+    New_movement=movement-1;
+    size=int(sqrt(actions))
+    letter=chr(65+New_movement%size)
+    num=str(int(New_movement/size)+1)
+    return letter+num
+
+print(interpretate_Computer(14,25))
