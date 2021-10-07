@@ -21,16 +21,18 @@ We test all the algorithms but we focused in 'Min Max CutOff' Algorithm with a d
 Firstly we played against the code that we made (Min Max CutOff, Min Max & Alpha Beta Pruning). Then we made that our classmates play our game. Finally we made that our algorithm deal against others algorithms in video games sites and we get the next results
 ### Min Max Cut Off
 
-- Difficult 3 x 3 
+- Difficult: 3 x 3, Depth: 5
 
-Nº | Player | Type | Space | Time | Result 
-:---: | :---: | :---: | :---: | :---: | :---:
- | | | | | |
- | | | | | |
- | | | | | |
- | | | | | |
+Nº | Player | Type | Space | Total Space | Time | Result 
+:---: | :---: | :---: | :---: | :---: | :---: | :---:
+ 1 | Daniel | X | [2969, 493, 48, 2] | 3 512 | 0.014499783515930176 | Tie! 
+ 2 | Daniel | O | [5256, 2171, 132, 10, 0] | 7 569 | 0.026001548767089842 | Tie! 
+ 3 | Adrian | X | [2337, 453, 32, 2] | 2 824 | 0.012748658657073975 | Tie!
+ 4 | Adrian | O | [5256, 2171, 132, 7] | 7 566 | 0.03250157833099365 | X Won!
+ 5 | Juslan | X | [4857, 541, 39, 2] | 5 439 | 0.023073136806488037  | Tie!
+ 6 | Juslan | O | [5256, 1293, 153, 3] | 6 705| 0.02880072593688965 | X Won!
 
-- Difficult 4 x 4
+- Difficult: 4 x 4
 
 Nº | Player | Type | Space | Time | Result 
 :---: | :---: | :---: | :---: | :---: | :---:
@@ -39,7 +41,7 @@ Nº | Player | Type | Space | Time | Result
  | | | | | |
  | | | | | |
  
-- Difficult 5 x 5
+- Difficult: 5 x 5
 
 Nº | Player | Type | Space | Time | Result 
 :---: | :---: | :---: | :---: | :---: | :---:
@@ -50,16 +52,18 @@ Nº | Player | Type | Space | Time | Result
 
 ### Min Max
 
-- Difficult 3 x 3 
+- Difficult: 3 x 3 
 
-Nº | Player | Type | Space | Time | Result 
-:---: | :---: | :---: | :---: | :---: | :---:
- | | | | | |
- | | | | | |
- | | | | | |
- | | | | | |
+Nº | Player | Type | Space | Total Space | Time (Avg) | Result 
+:---: | :---: | :---: | :---: | :---:  | :---: | :---:
+ 1 | Daniel | X | [59696, 928, 42, 2] | 60 668 | 0.26824891567230225 | Tie! 
+ 2 | Daniel | O | [549936, 7972, 252, 4] | 558 164 | 2.4795034527778625 | X Won! 
+ 3 | Adrian | X | [59696, 928, 42, 2] | 60 668| 0.26400017738342285 | Tie!
+ 4 | Adrian | O | [549936, 7324, 192, 10, 0] | 557 462 | 1.9845251560211181 | Tie!
+ 5 | Juslan | X | [55496, 1048, 48, 2] | 56 594 |0.2562618851661682 | Tie!
+ 6 | Juslan | O | [549936, 7324, 192, 10, 0]| 557 462 | 1.9858028888702393 | Tie! 
 
-- Difficult 5 x 5
+- Difficult: 5 x 5
 
 Nº | Player | Type | Space | Time | Result 
 :---: | :---: | :---: | :---: | :---: | :---:
@@ -70,14 +74,16 @@ Nº | Player | Type | Space | Time | Result
 
  ### Alpha Beta Pruning
 
-- Difficult 3 x 3 
+- Difficult: 3 x 3 
 
-Nº | Player | Type | Space | Time | Result 
-:---: | :---: | :---: | :---: | :---: | :---:
- | | | | | |
- | | | | | |
- | | | | | |
- | | | | | |
+Nº | Player | Type  | Spaces | Total Space | Time (Avg) | Result 
+:---: | :---: | :---: | :---: | :---: | :---: | :---:
+ 1 | Daniel | X | [59696, 928, 42, 2] | 60 668 | 0.265067458152771 | Tie!
+ 2 | Daniel | O | [549936, 7972, 252, 7] | 558 167 | 2.521013557910919 | X Won! 
+ 3 | Adrian | X | [59696, 928, 42, 2] |  60 668 |  0.2658373713493347 | Tie!
+ 4 | Adrian | O | [549936, 7972, 252, 7] | 558 167 |  2.46313613653183 | X Won! 
+ 5 | Juslan | X | [59696, 928, 42, 2] |  60 668 | 0.26260846853256226 | Tie!
+ 6 | Juslan | O | [549936, 7324, 192, 10, 0] | 557 462 |  1.9810106754302979 | Tie! 
 
 ## 4. Conclusions
 - How many states does the game tree have for 3x3, 4x4 and 5x5?
@@ -85,6 +91,10 @@ Nº | Player | Type | Space | Time | Result
     As we can see in the experiments the game tree has the next number of states
 
     3x3:
+        
+        Min Max: 215 762.5 states
+        Alpha Beta: 309 300 states
+        Min Max CutOff: 5 602.5 states
 
     4x4:
 
