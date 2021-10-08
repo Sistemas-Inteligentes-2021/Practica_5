@@ -251,6 +251,8 @@ def play_game(state,actions,type_player):
 
     print('Space Counter: ', end='')                                # Space Timer
     print(space_counter)
+    print(sum(space_counter))
+
     return winner
     
 # Setup_Controls: Select Player X or Player O 
