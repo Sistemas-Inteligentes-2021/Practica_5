@@ -98,8 +98,8 @@ Nº | Player | Type | Spaces | Space | Time | Result
 Nº | Player | Type  | Spaces | Total Space | Time (Avg) | Result 
 :---: | :---: | :---: | :---: | :---: | :---: | :---:
  1 | Daniel | X | [56754, 1180, 44, 2] | 57 980 | 3.1415116786956787 | Tie!
- 2 | Juslan | X | [56754, 1574, 60, 2]  | 58390 |3.167483329772949 | Tie!
- 3 | Adrian | O | [649300, 11024, 200, 12, 0] |  660536 |  029.55744800567627  | Tie!
+ 2 | Juslan | X | [56754, 1574, 60, 2]  | 58 390 |3.167483329772949 | Tie!
+ 3 | Adrian | O | [649300, 11024, 200, 12, 0] |  660 536 |  29.55744800567627  | Tie!
 
  ### Alpha Beta Pruning
 
@@ -114,6 +114,39 @@ Nº | Player | Type  | Spaces | Total Space | Time (Avg) | Result
  5 | Juslan | X | [59696, 928, 42, 2] |  60 668 | 0.26260846853256226 | Tie!
  6 | Juslan | O | [549936, 7324, 192, 10, 0] | 557 462 |  1.9810106754302979 | Tie! 
 
+- Difficult: 4 x 4, 
+    ### Initial State
+
+    Nº| A | B | C | D   
+    ---|--- |--- | --- | ---
+    1 | ' ' | ' ' | ' ' | ' ' 
+    2 | ' ' | ' ' | ' ' | ' ' 
+    3 | 'X' | 'O' | ' ' | ' ' 
+    4 | 'O' | 'X' | 'O' | 'X' 
+    
+
+Nº | Player | Type | Spaces | Space | Time | Result 
+:---: | :---: | :---: | :---: | :---: | :---: | :---:
+1 | Daniel | O | [15017, 1480, 154, 10, 0] | 16 661 | 0.2658102035522461 | Tie! 
+2 | Juslan | O | [14451, 1182, 128, 12, 0] | 15 773 | 0.2514761447906494 | Tie! 
+3 | Adrian | O | [22371, 1307, 118] | 23 796 | 0.5870599746704102 |  X Won!  
+
+- Difficult: 5 x 5
+    ### Initial State
+
+    Nº| A | B | C | D | E
+    ---|--- |--- | --- | --- | ---
+    1 | ' ' | ' ' | ' ' | ' ' | ' ' 
+    2 | ' ' | ' ' | 'X' | ' ' | ' ' 
+    3 | 'O' | 'X' | 'X' | 'O' | 'X' 
+    4 | 'O' | 'X' | 'O' | 'O' | 'X' 
+    5 | 'O' | 'X' | 'O' | 'X' | 'X' 
+
+Nº | Player | Type  | Spaces | Total Space | Time (Avg) | Result 
+:---: | :---: | :---: | :---: | :---: | :---: | :---:
+ 1 | Adrian | X | [15901, 477, 44, 2] | 16 424 | 0.6072256565093994 | Tie!
+ 2 | Juslan | X | [11295, 477, 42, 2]  | 11 816 |0.47043126821517944 | Tie!
+ 3 | Daniel | O | [42178, 1208, 169, 8] |  43 563 |   1.5239135026931763  | X Won! 
 ## 4. Conclusions
 - How many states does the game tree have for 3x3, 4x4 and 5x5?
 
@@ -127,14 +160,14 @@ Nº | Player | Type  | Spaces | Total Space | Time (Avg) | Result
 
     4x4:
     
-        Min Max:  states
-        Alpha Beta: ------ states
+        Min Max: 745 865.3 states  // For 10 possible moves
+        Alpha Beta: 18 743.3 states  // For 10 possible moves
         Min Max CutOff: 8 393.2 states
 
     5x5:
 
-        Min Max:  states
-        Alpha Beta: ------ states
+        Min Max: 258 968.7 states  // For 9 possible moves
+        Alpha Beta: 23 934.3 states  // For 9 possible moves
         Min Max CutOff: 71 897.8 states
 
 
@@ -145,11 +178,16 @@ Nº | Player | Type  | Spaces | Total Space | Time (Avg) | Result
     - In the other hand we have seen that the algorithm that more delay and expand more states is the algorithm "Min Max", in our experiments we can observe than is worst than Alpha Beta Pruning, but not with too much diference.
 
 ### Comments
-- We put an initial state with 6 moves for the 4x4 experiments and 16 moves for the 5x5 board experiments, because the time we have been waiting for a result was more than 4 hours and we have not received a response from the machine after waiting that time.
+- We put an initial state with 6 moves for the 4x4 experiments and 16 moves (Min Max & Alpha Beta) for the 5x5 board experiments, because the time we have been waiting for a result was more than 4 hours and we have not received a response from the machine after waiting that time.
 
+- For the average of states in Min Max & Alpha Beta, we put the average just for 10 possible moves (4x4) and 9 possible moves (5x5).
 
 ## 5. Bibliography
 
 ➡️  Infinity: [Python Docs: Swarm][infinity]
 
+➡️  Heuristic: [Mississippi University: Ole Miss][heuristic]
+
 [infinity]: https://www.it-swarm-es.com/es/python/como-puedo-representar-un-numero-infinito-en-python/939929888/
+
+[heuristic]: https://john.cs.olemiss.edu/~dwilkins/CSCI531/fall12/slides/AI_09_games.pdf

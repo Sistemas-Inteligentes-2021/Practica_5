@@ -283,10 +283,13 @@ def setup_difficult():
         actions=9
     elif difficult=='2':
         initial_state=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ', ' ', ' ', ' ',' ']
+        # initial_state=[' ', ' ', ' ',' ', ' ', ' ', ' ',' ', 'X', 'O', ' ',' ', 'O', 'X', 'O','X']
         actions=16
     elif difficult=='3':
         initial_state=[' ',' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ', ' ', ' ', ' ',' ',' ']
+        # initial_state=[' ',' ', ' ',' ',' ', ' ', ' ', 'X',' ',' ', 'O', 'X', 'X','O','X', 'O', 'X', 'O','O','X', 'O', 'X', 'O','X','X']
         actions=25   
+    # show_board(initial_state,actions)
     print('\n:------------------:\n')
     return initial_state, actions
 
