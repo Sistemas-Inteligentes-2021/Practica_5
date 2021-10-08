@@ -175,7 +175,7 @@ Nº | Player | Type  | Spaces | Total Space | Time (Avg) | Result
 
     - In conclusion the algorithm that less delay and expand less states is the algorithm that we saw in classes 'Min Max CutOff' we can conclude that based on experiments.
 
-    - In the other hand we have seen that the algorithm that more delay and expand more states is the algorithm "Min Max", in our experiments we can observe than is worst than Alpha Beta Pruning, but not with too much diference.
+    - In the other hand we have seen that the algorithm that more delay and expand more states is the algorithm "Min Max", in our experiments we can observe than is worst than Alpha Beta Pruning.
 
 ### Comments
 - We put an initial state with 6 moves for the 4x4 experiments and 16 moves (Min Max & Alpha Beta) for the 5x5 board experiments, because the time we have been waiting for a result was more than 4 hours and we have not received a response from the machine after waiting that time.
