@@ -313,7 +313,7 @@ def main():
     initial_state, actions = setup_difficult()
     winner=play_game(initial_state, actions, player_choice)
     display_winner(winner)
-    print('*** Game Made By: Adrian Mendoza - Daniel Camacho - Jhuslan Vargas ***\n')
+    print('*** Game Made By: Adrian Mendoza - Daniel Camacho - Juslan Vargas ***\n')
 
 if __name__ == '__main__':
     main()
