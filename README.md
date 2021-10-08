@@ -101,10 +101,13 @@ Nº | Player | Type  | Spaces | Total Space | Time (Avg) | Result
         Min Max CutOff: 5 602.5 states
 
     4x4:
+    
         Min Max:  states
         Alpha Beta: ------ states
         Min Max CutOff: 8 393.2 states
+
     5x5:
+
         Min Max:  states
         Alpha Beta: ------ states
         Min Max CutOff: 71 897.8 states
